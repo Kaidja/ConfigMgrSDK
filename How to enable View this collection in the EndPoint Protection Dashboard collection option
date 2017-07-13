@@ -1,0 +1,4 @@
+$CollectionName = "EP Servers"
+$CollectionQuery = Get-WmiObject -Namespace 'ROOT\SMS\Site_PS1' -Class 'SMS_COLLECTION' -Filter "Name='$CollectionName'"
+$CollectionQuery.MonitoringFlags= 16777216
+$CollectionQuery.Put()
