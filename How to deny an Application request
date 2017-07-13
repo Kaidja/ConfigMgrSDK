@@ -1,0 +1,2 @@
+$AppQuery = Get-WmiObject -Namespace 'Root\SMS\Site_PS1' -Class 'SMS_UserApplicationRequest' -Filter "RequestGUID='81F60B0E-DECA-43AE-BBA0-8B8BAA2E2C7C'"
+$AppQuery.Deny("comments here")
