@@ -1,0 +1,2 @@
+$AppQuery = Get-WmiObject -Namespace 'Root\SMS\Site_PS1' -Class 'SMS_UserApplicationRequest' -Filter "RequestGUID='C78A10F1-5864-4A68-87F6-6B47B66BF626'"
+$AppQuery.Approve("Approver´s comments here")
