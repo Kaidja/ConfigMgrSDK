@@ -1,0 +1,6 @@
+[Array]$DeviceCollectionID = "PS100017"
+$TargetFolderID = 16777236
+$CurrentFolderID = 0
+$ObjectTypeID = 5000
+
+Invoke-WmiMethod -Namespace 'Root\SMS\Site_PS1' -Class 'SMS_objectContainerItem' -Name 'MoveMembers' -ArgumentList $CurrentFolderID,$DeviceCollectionID,$ObjectTypeID,$TargetFolderID
