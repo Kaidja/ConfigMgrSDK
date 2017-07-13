@@ -1,0 +1,24 @@
+#Example 1
+$CollectionID = "PS10001F"
+$CollectionSettings = Get-WmiObject -Namespace 'Root\SMS\Site_PS1' -Class 'SMS_CollectionSettings' -Filter "CollectionID =  '$CollectionID'"
+
+If($CollectionSettings -eq $Null){
+    $Arguments = @{
+        CollectionID = $CollectionID
+    }
+    Set-WmiInstance -Namespace 'Root\SMS\Site_PS1' -Class SMS_CollectionSettings -Arguments $Arguments
+}
+
+$CollectionSettings = Get-WmiObject -Namespace 'Root\SMS\Site_PS1' -Class SMS_CollectionSettings -Filter "CollectionID =  '$CollectionID'"
+
+$CollectionSettings.Get()
+
+# New Collection Variable
+$WMIConnection = [WMICLASS]"\\Localhost\ROOT\SMS\Site_PS1:SMS_CollectionVariable"
+$NewCollectionVariable = $WMIConnection.psbase.CreateInstance()
+$NewCollectionVariable.Name = "APP02"
+$NewCollectionVariable.Value = "AppV5"
+$NewCollectionVariable.IsMasked = $False
+
+$CollectionSettings.CollectionVariables += $NewCollectionVariable.psobject.baseobject
+$CollectionSettings.Put()
