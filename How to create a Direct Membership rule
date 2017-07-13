@@ -1,0 +1,36 @@
+#Example 1
+$ResourceName = "Server100"
+$CollectionName = "OSD Bare Metal"
+$ResourceQuery =  Get-WmiObject -Namespace "Root\SMS\Site_PS1" -Class SMS_R_SYSTEM -Filter "Name = '$ResourceName'"
+$CollectionQuery = Get-WmiObject -Namespace "Root\SMS\Site_PS1" -Class SMS_Collection -Filter "Name = '$CollectionName' and CollectionType='2'"
+ 
+#Read Lazy properties
+$CollectionQuery.Get()
+ 
+#Create new direct membership rule
+$NewRule = ([WMIClass]"\\Localhost\root\SMS\Site_PS1:SMS_CollectionRuleDirect").CreateInstance()
+$NewRule.ResourceClassName = "SMS_R_System"
+$NewRule.ResourceID = $ResourceQuery.ResourceID
+$NewRule.Rulename = $ResourceQuery.Name
+ 
+#Commit changes and initiate the collection evaluator 
+$CollectionQuery.CollectionRules += $NewRule.psobject.baseobject
+$CollectionQuery.Put()
+$CollectionQuery.RequestRefresh()
+
+
+#Example 2
+$ResourceName = "Server100"
+$CollectionName = "OSD Bare Metal"
+$ResourceQuery =  Get-WmiObject -Namespace "Root\SMS\Site_PS1" -Class SMS_R_SYSTEM -Filter "Name = '$ResourceName'"
+$CollectionQuery = Get-WmiObject -Namespace "Root\SMS\Site_PS1" -Class SMS_Collection -Filter "Name = '$CollectionName' and CollectionType='2'"
+ 
+#Create new direct membership rule
+$NewRule = ([WMIClass]"\\Localhost\root\SMS\Site_PS1:SMS_CollectionRuleDirect").CreateInstance()
+$NewRule.ResourceClassName = "SMS_R_System"
+$NewRule.ResourceID = $ResourceQuery.ResourceID
+$NewRule.Rulename = $ResourceQuery.Name
+    
+#Commit changes and initiate the collection evaluator                   
+$CollectionQuery.AddMemberShipRule($NewRule)
+$CollectionQuery.RequestRefresh()
