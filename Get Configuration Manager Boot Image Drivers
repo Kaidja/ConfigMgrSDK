@@ -1,0 +1,20 @@
+$SiteCode = 'PS1'
+$BootImageName = 'Boot image (x64)'
+$DriverAr = @()
+$BootImage = Get-WmiObject -Namespace "root\SMS\Site_$SiteCode" -Class 'SMS_BootImagePackage' -Filter "Name='$BootImageName'"
+
+#Get the Lazy Properites - ReferencedDrivers is a lazy property
+$BootImage.Get()
+
+foreach($Driver in $BootImage.ReferencedDrivers){
+
+    $DriverInfo = Get-CimInstance -Namespace "root\SMS\Site_$SiteCode" -ClassName 'SMS_Driver' -Filter "CI_ID='$($Driver.ID)'"
+        $Props = {
+                 [Ordered]@{
+                    Name = $DriverInfo.LocalizedDisplayName
+                    CI_ID = $DriverInfo.CI_ID
+                 }
+        }
+        $DriverAr += New-Object PSObject -Property (&$Props)
+}
+$DriverAr
