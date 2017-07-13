@@ -1,0 +1,7 @@
+$DistributionPoint = "CM01"
+$DomainName = "OOBE.LOCAL"
+$SiteCode = "PS1"
+$NALPath = "[""Display=\\" +  $DistributionPoint + "." + $DomainName + "\""]MSWNET:[""SMS_SITE=" + $SiteCode + """]\\" + $DistributionPoint + "." + $DomainName + "\"
+ 
+$OSImage = Get-WmiObject -Namespace 'Root\SMS\Site_PS1' -Class 'SMS_ImagePackage' -Filter "Name = 'Windows 8 Enterprise x86'"
+$OSImage.AddDistributionPoints($SiteCode,$NALPath)
