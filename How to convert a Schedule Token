@@ -1,0 +1,8 @@
+$ScheduledToken = ([WMIClass]"\\Localhost\root\SMS\Site_PS1:SMS_ST_RecurInterval").CreateInstance()
+$ScheduledToken.DaySpan = 7
+
+$WMIConnection = ([WMIClass]"\\Localhost\root\SMS\Site_Ps1:SMS_ScheduleMethods")
+$schedule = $WMIConnection.psbase.GetMethodParameters("WriteToString")
+$schedule.TokenData = $ScheduledToken
+$StringData = $WMIConnection.psbase.InvokeMethod("WriteToString",$schedule,$null)
+$StringData
