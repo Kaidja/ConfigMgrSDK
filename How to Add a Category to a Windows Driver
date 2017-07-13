@@ -1,0 +1,13 @@
+$CategoryName = 'HDD'
+$DriverCI_ID = 16777353
+$CategoryQuery = Get-WmiObject -Namespace 'Root\SMS\Site_PS1' -Class 'SMS_CategoryInstance' -Filter "LocalizedCategoryInstanceName = '$CategoryName'"
+
+$DriverQuery = Get-WmiObject -Namespace 'Root\SMS\Site_PS1' -Class 'SMS_Driver' -Filter "CI_ID='$DriverCI_ID'"
+
+$Arguments = @{
+    CategoryInstanceID = $CategoryQuery.CategoryInstanceID;
+    ObjectKey = $DriverQuery.CI_UniqueID;
+    ObjectTypeID = 25
+}
+
+Set-WmiInstance -Namespace 'Root\SMS\Site_PS1' -Class 'SMS_CategoryInstanceMembership' -Arguments $Arguments
