@@ -1,0 +1,8 @@
+$LocalID = ([WMICLASS]"\\CM01\Root\SMS\Site_PS1:SMS_CI_LocalizedProperties").CreateInstance()
+$LocalID.DisplayName = "WRK 2013 04"
+$LocalID.Description = "Workstation 2013 04 Software Updates"
+$LocalID.LocaleID = 1033
+ 
+$NewSUPGROUP = ([WMICLASS]"\\CM01\Root\SMS\Site_PS1:SMS_AuthorizationList").CreateInstance()
+$NewSUPGROUP.LocalizedInformation = $LocalID
+$NewSUPGROUP.Put()
