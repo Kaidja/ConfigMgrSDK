@@ -1,0 +1,9 @@
+$DriverPackageName = "New Driver Package"
+$DriverCI_ID = 16777351
+ 
+$DriverPackageQuery = Get-WmiObject -Namespace 'Root\SMS\Site_PS1' -Class SMS_DriverPackage -Filter "Name='$DriverPackageName'"
+$DriverQuery = Get-WmiObject -Namespace 'Root\SMS\Site_PS1' -Class SMS_Driver -Filter "CI_ID='$DriverCI_ID'"
+$DriverContentQuery = Get-WmiObject -Namespace 'Root\SMS\Site_PS1' -Class SMS_CIToContent -Filter "CI_ID='$DriverCI_ID'"
+ 
+$DriverPackageQuery.AddDriverContent($DriverContentQuery.ContentID,$DriverQuery.ContentSourcePath,$False)
+ 
