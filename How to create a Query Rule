@@ -1,0 +1,23 @@
+$CollectionName = "7-Zip"
+$QueryExperssion = 'select *  from  SMS_R_User where SMS_R_User.UserGroupName = "CORP\\SW 7-Zip Install"' 
+$QueryExperssionName = "7-ZIP"
+$Collection = Get-WmiObject -Namespace "Root\SMS\Site_PS1" -Class SMS_Collection -Filter "Name='$CollectionName' and CollectionType = '1'"
+ 
+#Validate Query syntax  
+$ValidateQuery = Invoke-WmiMethod -Namespace "Root\SMS\site_P1I" -Class SMS_CollectionRuleQuery -Name ValidateQuery -ArgumentList $QueryExperssion
+ 
+If($ValidateQuery){
+
+    #Read Lazy properties
+    $Collection.Get()
+    
+    #Create new rule
+    $NewRule = ([WMIClass]"\\Localhost\Root\SMS\Site_PS1:SMS_CollectionRuleQuery").CreateInstance()
+    $NewRule.QueryExpression = $QueryExperssion
+    $NewRule.RuleName = $QueryExperssionName
+ 
+    #Commit changes and initiate the collection evaluator                   
+    $Collection.CollectionRules += $NewRule.psobject.baseobject
+    $Collection.Put()
+    $Collection.RequestRefresh()
+} 
