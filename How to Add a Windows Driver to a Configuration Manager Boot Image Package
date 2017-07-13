@@ -1,0 +1,20 @@
+#Driver CI_ID
+$DriverCI_ID = 16777350
+$BootImagePackageID = "PS100001"
+
+#Get the Boot image and the Driver
+$BootImageQuery = Get-WmiObject -Namespace "Root\SMS\Site_PS1" -Class SMS_BootImagePackage -Filter "PackageID='$BootImagePackageID'"
+$DriverQuery = Get-WmiObject -Namespace "Root\SMS\Site_PS1" -Class SMS_Driver -Filter "CI_ID='$DriverCI_ID'"
+
+#Read the Lazy properties also
+$BootImageQuery.Get()
+
+#New Driver details
+$NewBootImageDriver = ([WMIClass]"\\Localhost\root\SMS\Site_PS1:SMS_Driver_Details").CreateInstance()
+$NewBootImageDriver.ID = $DriverCI_ID
+$NewBootImageDriver.SourcePath = $DriverQuery.ContentSourcePath
+
+#Add the driver details
+$BootImageQuery.ReferencedDrivers += $NewBootImageDriver.psobject.baseobject
+$BootImageQuery.Put()
+$BootImageQuery.RefreshPkgSource()
