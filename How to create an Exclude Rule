@@ -1,0 +1,22 @@
+$CollectionName = "OSD Bare Metal"
+$ExclusionCollectionName = "New Dev Col"
+$ParentCollection = Get-WmiObject -Namespace 'ROOT\SMS\Site_PS1' -Class SMS_Collection -Filter "Name='$CollectionName'"
+$SubCollection = Get-WmiObject -Namespace 'ROOT\SMS\Site_PS1' -Class SMS_Collection -Filter "Name='$ExclusionCollectionName'"
+ 
+$VerifyDependency = Invoke-WmiMethod -Namespace 'ROOT\SMS\Site_PS1' -Class SMS_Collection -Name VerifyNoCircularDependencies -ArgumentList @($ParentCollection.__PATH,$SubCollection.__PATH,$null)
+ 
+If($VerifyDependency){
+
+    #Read Lazy properties
+    $ParentCollection.Get()
+    
+    #Create new rule
+    $NewRule = ([WMIClass]"\\Localhost\root\SMS\Site_PS1:SMS_CollectionRuleExcludeCollection").CreateInstance()
+    $NewRule.ExcludeCollectionID = $SubCollection.CollectionID
+    $NewRule.RuleName = $SubCollection.Name
+    
+    #Commit changes and initiate the collection evaluator                    
+    $ParentCollection.CollectionRules += $NewRule.psobject.baseobject
+    $ParentCollection.Put()
+    $ParentCollection.RequestRefresh()
+}
