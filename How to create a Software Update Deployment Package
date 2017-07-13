@@ -1,0 +1,7 @@
+$Arguments = @{
+    Name = "PowerShell SUP Package";
+    Description = "PowerShell TEST";
+    PkgSourceFlag = 2;
+    PkgSourcePath = "\\CM01\Sources\Updates\ENDPOINT"}
+
+Set-WmiInstance -Namespace 'ROOT\SMS\Site_PS1' -Class 'SMS_SoftwareUpdatesPackage' -Arguments $Arguments
