@@ -1,0 +1,17 @@
+#New GUID for the Category
+$GUID = [GUID]::NewGuid().ToString()
+
+#Create the SMS_Category_LocalizedProperties property 
+$NewCat = ([WMIClass]"\\Localhost\root\SMS\Site_PS1:SMS_Category_LocalizedProperties").CreateInstance()
+$NewCat.CategoryInstanceName = "Telefon 2"
+$NewCat.LocaleID = 0
+
+#Create the New Category Instance
+$Arguments = @{
+    CategoryTypeName = "DriverCategories"; 
+    LocalizedInformation = [ARRAY]$NewCat; 
+    SourceSite = "PS1";
+    CategoryInstance_UniqueID = "DriverCategories:$GUID"
+}
+
+Set-WmiInstance -Namespace 'Root\SMS\Site_PS1' -Class 'SMS_CategoryInstance' -Arguments $Arguments
