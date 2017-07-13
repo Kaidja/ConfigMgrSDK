@@ -1,0 +1,12 @@
+#Import the Configuration Manager module
+Import-Module $env:SMS_ADMIN_UI_PATH.Replace("\bin\i386","\bin\configurationmanager.psd1")
+$SiteCode = Get-PSDrive -PSProvider CMSITE
+Set-Location "$($SiteCode.Name):\"
+
+#Create the Admin Console folders
+New-Item -Name 'OSD' -Path "$($SiteCode.Name):\DeviceCollection"
+New-Item -Name 'Mobile Device Management' -Path "$($SiteCode.Name):\DeviceCollection"
+New-Item -Name 'Power Management' -Path "$($SiteCode.Name):\DeviceCollection"
+New-Item -Name 'ViaMonstra' -Path "$($SiteCode.Name):\DeviceCollection"
+New-Item -Name 'Software Updates' -Path "$($SiteCode.Name):\DeviceCollection"
+New-Item -Name 'Compliance' -Path "$($SiteCode.Name):\DeviceCollection"
