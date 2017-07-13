@@ -1,0 +1,21 @@
+$SiteCode = 'PS1'
+$DriverContent = @()
+$DriverPackage = Get-CimInstance -Namespace "Root\SMS\Site_$($SiteCode)" -ClassName 'SMS_DriverPackage'
+foreach($Package in $DriverPackage){
+
+    $SourceSize = Get-ChildItem $Package.PkgSourcePath -Recurse | Measure-Object -property length -sum |Select-Object -ExpandProperty SUM
+    $Props = {
+             [Ordered]@{
+                        Name = $Package.Name
+                        PackageID = $Package.PackageID
+                        'Size In MB' = [MATH]::Round($SourceSize/1MB,2)
+            }
+   }
+   $DriverContent += New-Object PSObject -Property (&$Props)
+}
+
+$TotalSize = $DriverContent | Measure-Object -property 'Size In MB' -SUM | Select-Object -ExpandProperty SUM
+
+Write-Output -InputObject "Driver packages source size: $TotalSize MB"
+
+$DriverContent
