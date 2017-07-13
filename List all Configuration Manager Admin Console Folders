@@ -1,0 +1,3 @@
+$SiteCode = 'PS1'
+Get-CimInstance -Namespace "Root\SMS\Site_$SiteCode" -ClassName 'SMS_ObjectContainerNode' |
+    Select-Object -Property Name,ContainerNodeID | Format-Table
