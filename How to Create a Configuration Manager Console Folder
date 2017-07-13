@@ -1,0 +1,6 @@
+$Arguments = @{
+    Name = 'New Package Folder';
+    ObjectType = 2; #Package folder
+    ParentContainerNodeId = 0
+}
+Set-WmiInstance -Namespace 'root\SMS\Site_PS1' -Class 'SMS_ObjectContainerNode' -Arguments $Arguments
