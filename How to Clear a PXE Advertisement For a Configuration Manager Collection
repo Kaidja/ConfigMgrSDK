@@ -1,0 +1,3 @@
+$CollectionName = 'New Device Collection'
+$ColQuery = Get-WmiObject -Namespace 'Root\SMS\Site_PS1' -Class SMS_Collection -Filter "Name='$CollectionName'"
+$ColQuery.ClearLastNBSAdvForCollection()
