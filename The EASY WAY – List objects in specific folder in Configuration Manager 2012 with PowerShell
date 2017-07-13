@@ -1,0 +1,4 @@
+$FolderID = 16777224 # Use the WMI tool to get the FolderID
+$CollectionsInSpecficFolder = Get-WmiObject -Namespace "ROOT\SMS\Site_PS1" `
+-Query "select * from SMS_Collection where CollectionID is in(select InstanceKey from SMS_ObjectContainerItem where ObjectType='5000' and ContainerNodeID='$FolderID') and CollectionType='2'"
+$CollectionsInSpecficFolder.Name
