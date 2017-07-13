@@ -1,0 +1,3 @@
+$UserName = 'CM\\KIM'
+$ResourceIDQuery = Get-CimInstance -Namespace 'Root\SMS\Site_PS1' -ClassName 'SMS_R_USER' -Filter "UniqueUserName='$UserName'"
+$ResourceIDQuery.ResourceId
