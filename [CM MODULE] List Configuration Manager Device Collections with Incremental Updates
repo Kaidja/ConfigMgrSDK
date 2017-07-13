@@ -1,0 +1,19 @@
+#Import Configuration Manager Module
+Import-Module $env:SMS_ADMIN_UI_PATH.Replace("\bin\i386","\bin\configurationmanager.psd1")
+$SiteCode = Get-PSDrive -PSProvider CMSITE
+Set-Location "$($SiteCode.Name):\"
+
+#Get all Device Collections
+$DeviceCollections = Get-CMDeviceCollection
+Write-Output -InputObject "--- Total Device Collections $($DeviceCollections.Count)"
+
+#Filter out only Incremental Updates enabled Device Collections
+$IncrementalEnabled = $DeviceCollections | Where-Object {$PSItem.RefreshType -eq 4 -or $PSItem.RefreshType -eq 6}
+
+#Print out Device Collections with Incremental Updates
+$IncrementalEnabled | Select-Object -Property Name,RefreshType
+Write-Output -InputObject "--- Total Device Collections $($IncrementalEnabled.Count) with Dynamic Update Enabled"
+
+#Export the Incremental enabled Device Collections to CSV file
+$IncrementalEnabled | Select-Object -Property Name, CollectionID, RefreshType | 
+ Export-Csv -Path 'G:\Scripts\CollectionsWithIncremental.csv' -Force -NoTypeInformation
