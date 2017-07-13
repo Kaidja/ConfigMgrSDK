@@ -1,0 +1,6 @@
+$DistributionPoint = "Server"
+$DomainName = "CM.LOCAL"
+$SiteCode = "PS1"
+$PackageID = "PS100007"
+$NALPath = "[""Display=\\" +  $DistributionPoint + "." + $DomainName + "\""]MSWNET:[""SMS_SITE=" + $SiteCode + """]\\" + $DistributionPoint + "." + $DomainName + "\"
+Invoke-WmiMethod -Namespace "Root\SMS\Site_$SiteCode" -Class SMS_DistributionPoint -Name VerifyPackage -ArgumentList ($NALPath,$PackageID)
