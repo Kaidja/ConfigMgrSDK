@@ -1,0 +1,9 @@
+$Arguments = @{
+    Name = "New Device Collection";
+    Comment = "Made by PowerShell";
+    OwnedByThisSite = $True;`
+    LimitToCollectionID = "SMS00001";
+    CollectionType = 2
+}
+
+Set-WmiInstance -Namespace 'Root\SMS\Site_PS1' -Class SMS_Collection -Arguments $Arguments
