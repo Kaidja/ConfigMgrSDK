@@ -1,0 +1,75 @@
+$SUPTemplate = @'
+<?xml version="1.0" encoding="utf-16"?>
+<ArrayOfSccmTemplatePropertyOption xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <SccmTemplatePropertyOption Key="TargetCollectionID">
+    <Value xsi:type="xsd:string">PS10000B</Value>
+  </SccmTemplatePropertyOption>
+  <SccmTemplatePropertyOption Key="DeploymentIntent">
+    <Value xsi:type="xsd:int">0</Value>
+  </SccmTemplatePropertyOption>
+  <SccmTemplatePropertyOption Key="SendWakeupPackets">
+    <Value xsi:type="xsd:boolean">false</Value>
+  </SccmTemplatePropertyOption>
+  <SccmTemplatePropertyOption Key="VerbosityLevel">
+    <Value xsi:type="xsd:int">1</Value>
+  </SccmTemplatePropertyOption>
+  <SccmTemplatePropertyOption Key="AdvanceVerbosityLevel">
+    <Value xsi:type="xsd:int">5</Value>
+  </SccmTemplatePropertyOption>
+  <SccmTemplatePropertyOption Key="UseGMTTimes">
+    <Value xsi:type="xsd:boolean">false</Value>
+  </SccmTemplatePropertyOption>
+  <SccmTemplatePropertyOption Key="UserExperience">
+    <Value xsi:type="xsd:int">0</Value>
+  </SccmTemplatePropertyOption>
+  <SccmTemplatePropertyOption Key="InstallOutsideOfServiceWindows">
+    <Value xsi:type="xsd:boolean">false</Value>
+  </SccmTemplatePropertyOption>
+  <SccmTemplatePropertyOption Key="RebootOutsideOfServiceWindows">
+    <Value xsi:type="xsd:boolean">false</Value>
+  </SccmTemplatePropertyOption>
+  <SccmTemplatePropertyOption Key="SuppressReboot">
+    <Value xsi:type="xsd:int">0</Value>
+  </SccmTemplatePropertyOption>
+  <SccmTemplatePropertyOption Key="WarnMeAlert">
+    <Value xsi:type="xsd:boolean">true</Value>
+  </SccmTemplatePropertyOption>
+  <SccmTemplatePropertyOption Key="PercentAlert">
+    <Value xsi:type="xsd:int">95</Value>
+  </SccmTemplatePropertyOption>
+  <SccmTemplatePropertyOption Key="RelativeDateTimeAlert">
+    <Value xsi:type="ArrayOfInt">
+      <int>7</int>
+      <int>1</int>
+    </Value>
+  </SccmTemplatePropertyOption>
+  <SccmTemplatePropertyOption Key="DisableMomAlerts">
+    <Value xsi:type="xsd:boolean">false</Value>
+  </SccmTemplatePropertyOption>
+  <SccmTemplatePropertyOption Key="RaiseMomAlertsOnFailure">
+    <Value xsi:type="xsd:boolean">false</Value>
+  </SccmTemplatePropertyOption>
+  <SccmTemplatePropertyOption Key="DPLocality.Remote">
+    <Value xsi:type="xsd:boolean">false</Value>
+  </SccmTemplatePropertyOption>
+  <SccmTemplatePropertyOption Key="DPLocality.Unprotected">
+    <Value xsi:type="xsd:boolean">true</Value>
+  </SccmTemplatePropertyOption>
+  <SccmTemplatePropertyOption Key="UseBranchCache">
+    <Value xsi:type="xsd:boolean">true</Value>
+  </SccmTemplatePropertyOption>
+  <SccmTemplatePropertyOption Key="DPLocality.AllowWUMU">
+    <Value xsi:type="xsd:boolean">false</Value>
+  </SccmTemplatePropertyOption>
+  <SccmTemplatePropertyOption Key="DPLocality.AllowUseMeteredNetwork">
+    <Value xsi:type="xsd:boolean">false</Value>
+  </SccmTemplatePropertyOption>
+</ArrayOfSccmTemplatePropertyOption>
+'@
+
+$Arguments = @{
+    Name = "My Software Updates Deployment Template"; 
+    Data = $SUPTemplate; 
+    Type = 0
+}
+Set-WmiInstance -Namespace 'Root\SMS\Site_PS1' -Class 'SMS_Template' -Arguments $Arguments
