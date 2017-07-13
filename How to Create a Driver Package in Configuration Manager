@@ -1,0 +1,6 @@
+$Arguments = @{
+    Name = "Lenovo T440 Win8x64";
+    PkgSourceFlag = 2;
+    PkgSourcePath = "\\cm01\Sources\OSD\Drivers\Packages\Lenovo\Lenovo_T440_Win7x64"
+}
+Set-WmiInstance -Namespace 'Root\SMS\Site_PS1' -Class 'SMS_DriverPackage' -Arguments $Arguments
