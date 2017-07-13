@@ -1,0 +1,22 @@
+$PackageQuery = Get-CimInstance -Namespace 'Root\SMS\Site_PS1' -ClassName 'SMS_Program'
+$EmptyArray = @()
+
+foreach($item in $PackageQuery)
+{
+        $DObject = New-Object PSObject
+
+            $DObject | Add-Member -MemberType NoteProperty -Name "Package Name" -Value $item.PackageName
+            $DObject | Add-Member -MemberType NoteProperty -Name "PackageID" -Value $item.PackageID
+            $DObject | Add-Member -MemberType NoteProperty -Name "Program Name" -Value $item.ProgramName
+            
+            If(($item.ProgramFlags -band 0x08000000) -eq 0){
+                $DObject | Add-Member -MemberType NoteProperty -Name "On Any Platform" -Value "Not enabled"
+            }
+            Else{
+                $DObject | Add-Member -MemberType NoteProperty -Name "On Any Platform" -Value "Enabled"
+            }
+
+    $EmptyArray += $DObject
+}
+
+$EmptyArray | Export-Csv 'C:\TEMP\myreport.csv' -NoTypeInformation
