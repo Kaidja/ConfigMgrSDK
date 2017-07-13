@@ -1,0 +1,44 @@
+# Malware is detected
+$NEWEPAlert = ([WMIClass]"\\Localhost\root\SMS\Site_PRI:SMS_EPAlert").CreateInstance()
+$NEWEPAlert.AlertState = 5
+$NEWEPAlert.InstanceNameParam1 = "EP Servers"
+$NEWEPAlert.Name = "Malware detection alert for collection: EP Servers"
+$NEWEPAlert.ParameterValues = '1'
+$NEWEPAlert.TypeInstanceID = "PRI0001C"
+$NEWEPAlert.Severity = 1
+$NEWEPAlert.TypeID = 31
+$NEWEPAlert.Put()
+
+# The same type malware is detected on a number of computers
+$NEWEPAlert = ([WMIClass]"\\Localhost\root\SMS\Site_PRI:SMS_EPAlert").CreateInstance()
+$NEWEPAlert.AlertState = 5
+$NEWEPAlert.InstanceNameParam1 = "EP Servers"
+$NEWEPAlert.Name = "Malware outbreak alert for collection: EP Servers"
+$NEWEPAlert.ParameterValues = '1'
+$NEWEPAlert.TypeInstanceID = "PRI0001C"
+$NEWEPAlert.Severity = 1
+$NEWEPAlert.TypeID = 32
+$NEWEPAlert.Put()
+
+# The same type malware is repeatedly detected within the speficied interval on a computer
+$NEWEPAlert = ([WMIClass]"\\Localhost\root\SMS\Site_PRI:SMS_EPAlert").CreateInstance()
+$NEWEPAlert.AlertState = 5
+$NEWEPAlert.InstanceNameParam1 = "EP Servers"
+$NEWEPAlert.Name = "Repeated malware detection alert for collection: EP Servers"
+$NEWEPAlert.ParameterValues = '21'
+$NEWEPAlert.TypeInstanceID = "PRI0001C"
+$NEWEPAlert.Severity = 1
+$NEWEPAlert.TypeID = 33
+$NEWEPAlert.Put()
+
+
+# Multiple types of malware are detected on the same computer with the specified interval
+$NEWEPAlert = ([WMIClass]"\\Localhost\root\SMS\Site_PRI:SMS_EPAlert").CreateInstance()
+$NEWEPAlert.AlertState = 5
+$NEWEPAlert.InstanceNameParam1 = "EP Servers"
+$NEWEPAlert.Name = "Multiple malware detection alert for collection: EP Servers"
+$NEWEPAlert.ParameterValues = '21'
+$NEWEPAlert.TypeInstanceID = "PRI0001C"
+$NEWEPAlert.Severity = 1
+$NEWEPAlert.TypeID = 34
+$NEWEPAlert.Put()
