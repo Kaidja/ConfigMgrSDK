@@ -1,0 +1,4 @@
+$DeviceName = 'CM01'
+$SiteCode = 'PS1'
+$ResourceQuery = Get-CimInstance -Namespace "Root\SMS\Site_$($SiteCode)" -ClassName 'SMS_R_SYSTEM' -Filter "Name='$DeviceName'"
+$ResourceQuery.ResourceId
