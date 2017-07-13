@@ -1,0 +1,7 @@
+$Collection = "EP Servers"
+$NewLimitingCollectionName = "All Servers"
+$NewLimitingCollectionID = "PS10001D"
+$CollectionQuery = Get-WmiObject -Namespace "root\SMS\Site_PS1" -Class SMS_Collection -Filter "Name='$Collection'"
+$CollectionQuery.LimitToCollectionID = $NewLimitingCollectionID
+$CollectionQuery.LimitToCollectionName = $NewLimitingCollectionName
+$CollectionQuery.Put()
