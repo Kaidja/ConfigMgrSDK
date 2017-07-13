@@ -1,0 +1,13 @@
+$SiteCode = 'PS1'
+$QueryExpression = "SELECT * FROM SMS_R_System WHERE Client = 1 AND ClientType != 3 AND ClientVersion IS NOT NULL AND ClientVersion >= '5.00.7958.1501'"
+$Comments = "ConfigMgr clients at or above version 5.00.7958.1501 (Cumulative Update 4 for System Center 2012 R2 Configuration Manager)"
+$Name = "ConfigMgr clients at or above version 5.00.7958.1501 (Cumulative Update 4 for System Center 2012 R2 Configuration Manager)"
+
+$Arguments = @{
+        Comments = $Comments; 
+        Expression = $QueryExpression; 
+        Name = $Name; 
+        TargetClassName = "SMS_R_System"
+}
+
+Set-WmiInstance -Namespace "Root\SMS\Site_$SiteCode" -Class 'SMS_Query' -Arguments $Arguments
