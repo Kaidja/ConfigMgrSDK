@@ -1,0 +1,6 @@
+#Example 1
+$Arguments = @{
+    PropertyListName = 'Installed Units'; 
+    Values = [Array]'SMS'
+}
+Set-WmiInstance -Namespace 'Root\SMS\Site_PS1' -Class 'SMS_EmbeddedPropertyList' -Arguments $Arguments
