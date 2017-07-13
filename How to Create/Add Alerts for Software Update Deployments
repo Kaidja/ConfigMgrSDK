@@ -1,0 +1,21 @@
+$AlertTemplate = '<Parameters><Parameter index="1" isUserParameter="0" type="int"/><Parameter index="2" isUserParameter="0" type="int"/><Parameter index="3" isUserParameter="1" 
+                         type="int">75</Parameter><Parameter index="4" isUserParameter="0" type="int"/></Parameters>'
+
+$WMIConnection = [WMICLASS]"\\CM01\Root\SMS\Site_PS1:SMS_Alert"
+$NewAlert = $WMIConnection.psbase.CreateInstance()
+$NewAlert.ParameterValues = $AlertTemplate
+$NewAlert.IsIgnored = $False
+$NewAlert.Name = "Low deployment success rate alert of update group deployment: $AlertName"
+$NewAlert.ObjectTypeID = 200
+$NewAlert.TypeID = 12
+$NewAlert.TypeInstanceID = "{9A0F79E6-BA5E-4B0C-BCA8-8432CCC55D5B}" # SMS_UpdateGroupAssignment WMI Property AssignmentUniqueID
+$NewAlert.Severity = 1
+$NewAlert.MonitoredByScom = $False
+$NewAlert.AlertState = 5
+$NewAlert.Deletable = $True
+$NewAlert.Enabled = $True
+$NewAlert.FeatureArea = 4
+$NewAlert.FeatureGroup = 2
+$NewAlert.InstanceNameParam1 = "Low deployment success rate alert of update group deployment: SUM 2013 07 July"
+$NewAlert.SkipUntil = "20130712100619.000000+000"
+$NewAlert.Put()
