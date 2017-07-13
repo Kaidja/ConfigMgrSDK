@@ -1,0 +1,7 @@
+$Arguments = @{
+    Name = 'Windows 10';
+    PkgSourceFlag = 2;
+    PkgSourcePath = '\\cm01\Sources\OSD\Images\Windows 10 Technical Preview\install.wim';
+    Version = '1.0'
+}
+Set-WmiInstance -Namespace 'Root\SMS\Site_PS1' -Class 'SMS_ImagePackage' -Arguments $Arguments
