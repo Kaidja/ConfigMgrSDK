@@ -1,0 +1,10 @@
+# Client check pass or no results for active clients falls below threshold(%)
+$NEWCMAlert = ([WMIClass]"\\Localhost\root\SMS\Site_PS1:SMS_CHAlert").CreateInstance()
+$NEWCMAlert.AlertState = 5
+$NEWCMAlert.InstanceNameParam1 = "EP Servers"
+$NEWCMAlert.Name = "Low client check alert for collection: EP Servers"
+$NEWCMAlert.ParameterValues = '95'
+$NEWCMAlert.TypeInstanceID = "PS10001C"
+$NEWCMAlert.Severity = 2
+$NEWCMAlert.TypeID = 21
+$NEWCMAlert.Put()
