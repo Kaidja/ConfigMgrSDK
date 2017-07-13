@@ -1,0 +1,10 @@
+$Arguments = @{
+    Name = "New Collection with Incremental Updates";
+    Comment = "Made by PowerShell";
+    OwnedByThisSite = $True; `
+    LimitToCollectionID = "SMS00001";
+    CollectionType = 2;
+    RefreshType = 4
+}
+
+Set-WmiInstance -Namespace 'Root\SMS\Site_PS1' -Class SMS_Collection -Arguments $Arguments
