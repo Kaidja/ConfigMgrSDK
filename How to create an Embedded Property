@@ -1,0 +1,7 @@
+$Arguments = @{
+    PropertyName = 'SQLServicePort';
+    Value = 1433;
+    Value1 = '';
+    Value2 = ''
+}
+Set-WmiInstance -Namespace 'Root\SMS\Site_PS1' -Class 'SMS_EmbeddedProperty' -Arguments $Arguments
