@@ -1,0 +1,5 @@
+$Application = 'Adobe Reader 9.3'
+$APPQuery = Get-CimInstance -Namespace 'Root\SMS\Site_PS1' -ClassName SMS_ApplicationLatest -Filter "LocalizedDisplayName='$Application'"
+$PackageIDQuery = Get-CimInstance -Namespace 'Root\SMS\Site_PS1' -ClassName SMS_ContentPackage -Filter "SecurityKey='$($APPQuery.ModelName)'"
+
+Write-Output -InputObject "Application $($APPQuery.LocalizedDisplayName) PackageID is: $($PackageIDQuery.PackageID)"
