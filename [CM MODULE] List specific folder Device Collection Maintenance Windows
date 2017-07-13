@@ -1,0 +1,37 @@
+#Import Configuration Manager Module
+Import-Module $env:SMS_ADMIN_UI_PATH.Replace("\bin\i386","\bin\configurationmanager.psd1")
+$SiteCode = Get-PSDrive -PSProvider CMSITE
+Set-Location "$($SiteCode.Name):\"
+
+$SWUpdatesFolderID = 16777223 #Software Updates Device Collection Folder
+$SiteCode = 'PS1'
+$MaintenanceWindows = @()
+
+#Query All Collections from Software Updates Folder
+$CollectionsInSpecficFolder = Get-CimInstance -Namespace "ROOT\SMS\Site_$SiteCode" `
+-Query "select * from SMS_Collection where CollectionID is in(select InstanceKey from SMS_ObjectContainerItem where ObjectType='5000' and ContainerNodeID='$SWUpdatesFolderID') and CollectionType='2'"
+
+Write-Output -InputObject "Device Collections in $SWUpdatesFolderID folder: $($CollectionsInSpecficFolder.Count)"
+
+foreach($Collection in $CollectionsInSpecficFolder){
+    
+    Write-Output -InputObject "Quering $($Collection.Name) Device Collection"
+
+    #Using ConfigMgr PowerShell module Get-CMMaintenanceWindow cmdlet  
+    $MWQuery = Get-CMMaintenanceWindow -CollectionId $Collection.CollectionID
+    $Props = {
+             [Ordered]@{
+                Collection = $Collection.Name
+                CollectionID = $Collection.CollectionID
+                MWName = $MWQuery.Name
+                IsEnabled = $MWQuery.IsEnabled
+                Duration = $MWQuery.Duration
+                Description = $MWQuery.Description
+                ServiceWindowType = switch($MWQuery.ServiceWindowType){1{'All Deployments'}4{'Software Updates'}5{'Task Sequences'}}
+                StartTime = $MWQuery.StartTime
+             }
+    }
+    $MaintenanceWindows += New-Object PSObject -Property (&amp;$Props)
+
+}
+$MaintenanceWindows | Out-GridView -Title "Maintenance Windows in $SWUpdatesFolderID folder: $(Get-Date)"
