@@ -1,0 +1,5 @@
+$DeployMentName = "SUM 2013 06 June"
+$TargetCollectionID = "SMS00001"
+$SUPDeployment = Get-WmiObject -Namespace 'ROOT\SMS\Site_PS1' -Class 'SMS_UpdatesAssignment' -Filter "AssignmentName='$DeployMentName' and TargetCollectionID='$TargetCollectionID'"
+$SUPDeployment.Enabled = $False
+$SUPDeployment.Put()
