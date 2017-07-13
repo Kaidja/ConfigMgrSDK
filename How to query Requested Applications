@@ -1,0 +1,2 @@
+$AppQuery = Get-CimInstance -Namespace "Root\SMS\Site_PS1" -ClassName SMS_UserApplicationRequest
+$AppQuery | Select-Object Application, RequestGUID, User, Comments
