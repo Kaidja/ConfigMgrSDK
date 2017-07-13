@@ -1,0 +1,4 @@
+$CollectionName = "New Device Collection"
+$SiteCode = "PS1"
+$CollectionQuery = Get-WmiObject -Namespace "Root\SMS\Site_$SiteCode" -Class SMS_Collection -Filter "Name='$CollectionName'"
+$CollectionQuery.RequestRefresh()
