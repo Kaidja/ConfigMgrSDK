@@ -1,0 +1,8 @@
+#Example 1
+$WMIConnection  = [WMICLASS]"\\Localhost\root\CCM:SMS_Client"
+$MethodParameters = $WMIConnection.psbase.GetMethodParameters("TriggerSchedule")
+$MethodParameters.sScheduleID = "{00000000-0000-0000-0000-000000000001}"
+$WMIConnection.psbase.InvokeMethod("TriggerSchedule",$MethodParameters,$Null)
+
+#Example 2
+Invoke-WmiMethod -Namespace root\CCM -Class SMS_Client -Name TriggerSchedule -ArgumentList "{00000000-0000-0000-0000-000000000001}"
