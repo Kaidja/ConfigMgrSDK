@@ -1,0 +1,43 @@
+Function Get-CMAdminConsoleXML
+{
+    Try{
+        Get-ChildItem $env:SMS_ADMIN_UI_PATH.Replace("bin\i386","XmlStorage\ConsoleRoot") -ErrorAction STOP
+    }
+    Catch{
+        $_.Exception.Message
+    }
+}
+
+Function New-CMAdminConsoleExtension
+{
+   Param($ConsoleGUID)
+   
+   $ExtensionsFolder = $env:SMS_ADMIN_UI_PATH.Replace("bin\i386","XmlStorage\Extensions\Actions")
+   
+   $Content = '<ActionDescription Class="Group" DisplayName="GUID_ID" MnemonicDisplayName="Test" Description="Test"><ShowOn><string>DefaultHomeTab</string><string>ContextMenu</string>  </ShowOn><ActionGroups> <ActionDescription Class="Executable" DisplayName="Test1" MnemonicDisplayName="Test1" Description = "Test1" RibbonDisplayType="TextAndSmallImage"><ShowOn><string>ContextMenu</string><string>DefaultHomeTab</string></ShowOn><Executable><FilePath>test.exe</FilePath><Parameters></Parameters></Executable></ActionDescription></ActionGroups></ActionDescription>'
+   New-Item -Path $ExtensionsFolder -Name $ConsoleGUID -ItemType Directory -Force
+   
+   $NewContent = $Content.Replace("GUID_ID",$ConsoleGUID)
+   $NewContent | Out-File -FilePath "$ExtensionsFolder\$ConsoleGUID\1.XML" -Force
+    
+}
+
+Function Get-CMConsoleGUID
+{
+    Param($ConsoleFile)
+
+    $XMLContent = Get-Content $ConsoleFile
+    foreach($item in  ($XMLContent | Select-String -Pattern "NamespaceGUID=")){
+        $k = $item.ToString() -Split("NameSpaceGUID=")
+        New-CMAdminConsoleExtension -ConsoleGUID ($k[1] -split '"')[1]
+    }
+}
+
+####### Script Entry Point ######################
+if(Test-Path $env:SMS_ADMIN_UI_PATH){
+
+    $CMAdminConsoleFiles = Get-CMAdminConsoleXML
+    foreach($File in $CMAdminConsoleFiles){
+            Get-CMConsoleGUID $File.FullName
+    }
+}
