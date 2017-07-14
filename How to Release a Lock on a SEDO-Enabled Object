@@ -1,0 +1,11 @@
+$ObjectRELPath = "SMS_Application.CI_ID=16777312"
+$AssignedObjectLockContext = "15bbe22a-4420-4475-932d-6739ea4de4b0"
+
+$WMIConnection = [WMIClass]"\\Localhost\root\SMS\Site_PS1:SMS_ObjectLock"
+    $ObjectLock = $WMIConnection.psbase.GetMethodParameters("ReleaseLock")
+    $ObjectLock.ObjectRelPath = $ObjectRELPath
+
+    $MethodOption = New-Object System.Management.InvokeMethodOptions
+    $MethodOption.Context.Add("ObjectLockContext",$AssignedObjectLockContext)
+    $MethodOption.Context.Add("MachineName",$ENV:ComputerName)
+$WMIConnection.psbase.InvokeMethod("ReleaseLock",$ObjectLock,$MethodOption)
