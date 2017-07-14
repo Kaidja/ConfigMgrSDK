@@ -1,0 +1,3 @@
+$SecurityScopeID = "PS100001"
+$SecurityScopeObjects = Get-WmiObject -Namespace 'Root\SMS\Site_PS1' -Class 'SMS_SecuredCategoryMembership' -Filter "CategoryID='$SecurityScopeID'"
+$SecurityScopeObjects
