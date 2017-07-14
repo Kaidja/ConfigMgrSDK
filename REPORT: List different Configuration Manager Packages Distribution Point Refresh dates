@@ -1,0 +1,259 @@
+<#
+.Synopsis
+   This script can create different packages refresh date/time report
+.DESCRIPTION
+.EXAMPLE
+    Get-CMContentRefreshSchedules.ps1 -SiteCode PR1 -SiteServer Localhost -PackageType Packages -CSV -OutPut C:\Users\administrator.LAB\Desktop\Report.CSV
+.EXAMPLE
+    Get-CMContentRefreshSchedules.ps1 -SiteCode PR1 -SiteServer Localhost -PackageType BootImages -HTML -OutPut C:\Users\administrator.LAB\Desktop\Report.HTML
+.EXAMPLE
+    Get-CMContentRefreshSchedules.ps1 -SiteCode PR1 -SiteServer Localhost -PackageType DriverPackages -HTML -OutPut C:\Users\administrator.LAB\Desktop\Report.HTML
+.EXAMPLE
+    Get-CMContentRefreshSchedules.ps1 -SiteCode PR1 -SiteServer Localhost -PackageType Images -CSV -OutPut C:\Users\administrator.LAB\Desktop\Report.CSV
+.EXAMPLE
+    Get-CMContentRefreshSchedules.ps1 -SiteCode PR1 -SiteServer Localhost -PackageType SoftwareUpdates -HTML -OutPut C:\Users\administrator.LAB\Desktop\Report.HTML
+.NOTES
+    Developed by Kaido Järvemets
+    Version 1.0
+
+#>
+[CMDLETBINDING()]
+Param(
+    [Parameter(Mandatory=$True,HelpMessage="Please Enter CM SiteCode",ParameterSetName='HTML')]
+    [Parameter(Mandatory=$True,HelpMessage="Please Enter CM SiteCode",ParameterSetName='CSV')]
+     $SiteCode,
+    [Parameter(Mandatory=$True,HelpMessage="Please Enter CM Site Server",ParameterSetName='HTML')]
+    [Parameter(Mandatory=$True,HelpMessage="Please Enter CM Site Server",ParameterSetName='CSV')]
+     $SiteServer,
+    [Parameter(Mandatory=$True,HelpMessage="Please specify object type",ParameterSetName='HTML')]
+    [Parameter(Mandatory=$True,HelpMessage="Please specify object type",ParameterSetName='CSV')]
+    [ValidateSet("Packages","DriverPackages","SoftwareUpdates","Images","BootImages")]
+     $PackageType,
+    [Parameter(Mandatory=$True,ParameterSetName='CSV')]
+        [Switch]$CSV,
+    [Parameter(Mandatory=$True,ParameterSetName='HTML')]
+        [Switch]$HTML,
+    [Parameter(Mandatory=$True,HelpMessage="Please specify file location",ParameterSetName='HTML')]
+    [Parameter(Mandatory=$True,HelpMessage="Please specify file location",ParameterSetName='CSV')]
+        $OutPut
+     )
+
+    Switch($PackageType)
+    {
+        "Packages"
+        {
+            $Class = "SMS_Package"
+            $ReportName = "Packages"
+        }
+        "DriverPackages"
+        {
+            $Class = "SMS_DriverPackage"
+            $ReportName = "Driver Packages"
+        }
+        "SoftwareUpdates"
+        {
+            $Class = "SMS_SoftwareUpdatesPackage"
+            $ReportName = "Software Update Packages"
+        }
+        "Images"
+        {
+            $Class = "SMS_ImagePackage"
+            $ReportName = "Image Packages"
+        }
+        "BootImages"
+        {
+            $Class = "SMS_BootImagePackage"
+            $ReportName = "Boot Image Packages"
+        }
+    }
+
+$Objects = @()
+$RefreshSchedules = @()
+$i=0
+#Query Content Refresh Schedules
+Get-WmiObject -Namespace "Root\SMS\Site_$($SiteCode)" -Query "Select Name,PackageID,StoredPkgVersion,RefreshSchedule from $Class" -ErrorAction STOP -ComputerName $SiteServer | ForEach-Object `
+    {
+    
+    $i++
+    Write-Progress -Activity "Gathering Information Step 1" -Status "Done: $i"
+    $Objects +=[WMI]$_.__PATH
+    
+    }
+
+Function Convert-DayNumbersToDayName
+{
+    [CmdletBinding()]
+    Param(
+         [String]$DayNumber
+         )
+        
+    Switch ($DayNumber)
+    {
+          "1" {$DayName = "Sunday"}
+          "2" {$DayName = "Monday"}
+          "3" {$DayName = "TuesDay"}
+          "4" {$DayName = "WednesDay"}
+          "5" {$DayName = "ThursDay"}
+          "6" {$DayName = "FriDay"}
+          "7" {$DayName = "Saturday"}
+
+    }
+    
+    Return $DayName
+}
+
+Function Convert-MonthToNumbers
+{
+    [CmdletBinding()]
+    Param(
+         [String]$MonthNumber
+         )
+        
+    Switch ($MonthNumber)
+    {
+          "1" {$MonthName = "January"}
+          "2" {$MonthName = "Feburary"}
+          "3" {$MonthName = "March"}
+          "4" {$MonthName = "April"}
+          "5" {$MonthName = "May"}
+          "6" {$MonthName = "June"}
+          "7" {$MonthName = "July"}
+          "8" {$MonthName = "August"}
+          "9" {$MonthName = "September"}
+          "10" {$MonthName = "October"}
+          "11" {$MonthName = "November"} 
+          "12" {$MonthName = "December"}
+    }
+    
+    Return $MonthName
+}
+
+Function Convert-WeekOrderNumber
+{
+    [CmdletBinding()]
+    Param(
+         [String]$WeekOrderNumber
+         )
+        
+    Switch ($WeekOrderNumber)
+    {
+          0 {$WeekOrderName = "Last"}
+          1 {$WeekOrderName = "First"}
+          2 {$WeekOrderName = "Second"}
+          3 {$WeekOrderName = "Third"}
+          4 {$WeekOrderName = "Fourth"}
+
+    }
+    
+    Return $WeekOrderName
+}
+
+$i=0
+foreach($item in $Objects)
+{
+    $i++
+    Write-Progress -Activity "Gathering Information Step 2" -Status "Done: $i" -PercentComplete ($i / $Objects.count*100)
+
+    $DObject = New-Object PSObject
+    $DObject | Add-Member -MemberType NoteProperty -Name "Package Name" -Value $item.Name
+    $DObject | Add-Member -MemberType NoteProperty -Name "Package ID" -Value $item.PackageID
+    $DObject | Add-Member -MemberType NoteProperty -Name "Stored Package Version" -Value $item.StoredPkgVersion
+
+    if($item.RefreshSchedule -eq $Null){
+    
+        $DObject | Add-Member -MemberType NoteProperty -Name "Refresh Date" -Value "NO Date"
+        $DObject | Add-Member -MemberType NoteProperty -Name "Refresh Time" -Value "NO Time"
+        $DObject | Add-Member -MemberType NoteProperty -Name "Last Refresh Time" -Value ([System.Management.ManagementDateTimeConverter]::ToDateTime($item.LastRefreshTime))
+    }
+
+    Else{
+         switch($item.RefreshSchedule.__CLASS)
+         {
+            "SMS_ST_RecurWeekly" 
+                               {
+                                    $DObject | Add-Member -MemberType NoteProperty -Name "Refresh Date" -Value ("Occures every: $($item.RefreshSchedule.ForNumberOfWeeks) weeks on " + (Convert-DayNumbersToDayName -DayNumber $item.RefreshSchedule.Day))
+                                    $DObject | Add-Member -MemberType NoteProperty -Name "Refresh Time" -Value ([System.Management.ManagementDateTimeConverter]::ToDateTime($item.RefreshSchedule.StartTime))
+                                    $DObject | Add-Member -MemberType NoteProperty -Name "Last Refresh Time" -Value ([System.Management.ManagementDateTimeConverter]::ToDateTime($item.LastRefreshTime))
+                               }
+       
+           "SMS_ST_RecurInterval"
+                               {
+
+                                    if($item.RefreshSchedule.DaySpan -ne 0){
+                                        $text = "Occures every $($item.RefreshSchedule.DaySpan) days"
+                                    }
+                                    if($item.RefreshSchedule.HourSpan -ne 0){
+                                        $text = "Occures every $($item.RefreshSchedule.HourSpan) hours"
+                                    }
+                                    if($item.RefreshSchedule.MinuteSpan -ne 0){
+                                        $text = "Occures every $($item.RefreshSchedule.MinuteSpan) minutes"
+                                    }
+                                    
+                                    $DObject | Add-Member -MemberType NoteProperty -Name "Refresh Date" -Value $text
+                                    $DObject | Add-Member -MemberType NoteProperty -Name "Refresh Time" -Value ([System.Management.ManagementDateTimeConverter]::ToDateTime($item.RefreshSchedule.StartTime))
+                                    $DObject | Add-Member -MemberType NoteProperty -Name "Last Refresh Time" -Value ([System.Management.ManagementDateTimeConverter]::ToDateTime($item.LastRefreshTime))
+                               }
+                           
+           "SMS_ST_RecurMonthlyByDate"
+                               {
+
+                                   If($item.RefreshSchedule.MonthDay -eq 0){
+                                        
+                                    $DObject | Add-Member -MemberType NoteProperty -Name "Refresh Date" -Value "Occures the last day of every $($item.RefreshSchedule.ForNumberOfMonths) months"
+                                    $DObject | Add-Member -MemberType NoteProperty -Name "Refresh Time" -Value ([System.Management.ManagementDateTimeConverter]::ToDateTime($item.RefreshSchedule.StartTime))
+                                    $DObject | Add-Member -MemberType NoteProperty -Name "Last Refresh Time" -Value ([System.Management.ManagementDateTimeConverter]::ToDateTime($item.LastRefreshTime))
+                                   }
+                                   Else{
+                                    
+                                    $DObject | Add-Member -MemberType NoteProperty -Name "Refresh Date" -Value "Occures day $($item.RefreshSchedule.MonthDay) of every $($item.RefreshSchedule.ForNumberOfMonths) months"
+                                    $DObject | Add-Member -MemberType NoteProperty -Name "Refresh Time" -Value ([System.Management.ManagementDateTimeConverter]::ToDateTime($item.RefreshSchedule.StartTime))
+                                    $DObject | Add-Member -MemberType NoteProperty -Name "Last Refresh Time" -Value ([System.Management.ManagementDateTimeConverter]::ToDateTime($item.LastRefreshTime))
+                                   }
+                               }
+                           
+           "SMS_ST_RecurMonthlyByWeekday"    
+                               {
+                                   $DObject | Add-Member -MemberType NoteProperty -Name "Refresh Date" -Value ("Occures the " + (Convert-WeekOrderNumber -weekordernumber $item.RefreshSchedule.WeekOrder) + " " + (Convert-DayNumbersToDayName -DayNumber $item.RefreshSchedule.Day) + " of every " + (Convert-MonthToNumbers -MonthNumber $item.RefreshSchedule.ForNumberOfMonths))
+                                   $DObject | Add-Member -MemberType NoteProperty -Name "Refresh Time" -Value ([System.Management.ManagementDateTimeConverter]::ToDateTime($item.RefreshSchedule.StartTime))
+                                   $DObject | Add-Member -MemberType NoteProperty -Name "Last Refresh Time" -Value ([System.Management.ManagementDateTimeConverter]::ToDateTime($item.LastRefreshTime))
+                               }                 
+      
+           "SMS_ST_NonRecurring"
+                                {
+                                   $DObject | Add-Member -MemberType NoteProperty -Name "Refresh Date" -Value "No Recurrence. The Scheduled event Occures once at the specific time"
+                                   $DObject | Add-Member -MemberType NoteProperty -Name "Refresh Time" -Value ([System.Management.ManagementDateTimeConverter]::ToDateTime($item.RefreshSchedule.StartTime))
+                                   $DObject | Add-Member -MemberType NoteProperty -Name "Last Refresh Time" -Value ([System.Management.ManagementDateTimeConverter]::ToDateTime($item.LastRefreshTime))
+                                }              
+         }
+    }
+    $RefreshSchedules += $DObject
+}
+
+If($CSV){
+    Try{
+        $RefreshSchedules | Sort-object -Property "Last Refresh Time" | Export-Csv $OutPut -NoTypeInformation -ErrorAction Stop
+    }
+    Catch{
+        Write-Host "Failed to export CSV to $OutPut"
+    }
+}
+
+If($HTML){
+    
+    $CurrentDate = Get-Date
+
+    #HTML style
+    $HeadStyle = "<style>"
+    $HeadStyle = $HeadStyle + "BODY{background-color:peachpuff;}"
+    $HeadStyle = $HeadStyle + "TABLE{border-width: 1px;border-style: solid;border-color: black;border-collapse: collapse;}"
+    $HeadStyle = $HeadStyle + "TH{border-width: 1px;padding: 0px;border-style: solid;border-color: black;background-color:thistle}"
+    $HeadStyle = $HeadStyle + "TD{border-width: 1px;padding: 0px;border-style: solid;border-color: black;background-color:palegoldenrod}"
+    $HeadStyle = $HeadStyle + "</style>"   
+
+    Try{
+        $RefreshSchedules | Sort-object -Property "Last Refresh Time" | ConvertTo-Html -Head $HeadStyle -Body "<h2>$ReportName Refresh Schedule Date/Time Report: $CurrentDate</h2>" -ErrorAction STOP | Out-File $OutPut
+    }
+    Catch{
+        Write-Host "Failed to export HTML to $OutPut"
+    }
+}
