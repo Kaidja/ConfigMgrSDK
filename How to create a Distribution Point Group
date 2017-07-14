@@ -1,0 +1,4 @@
+$Arguments = @{
+    Name = "New Distribution Group"
+}
+Set-WmiInstance -Namespace 'Root\SMS\Site_PS1' -Class 'SMS_DistributionPointGroup' -Arguments $Arguments
