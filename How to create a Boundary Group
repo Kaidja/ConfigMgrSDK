@@ -1,0 +1,4 @@
+$Arguments = @{
+    Name = "New Boundary Group"
+}
+Set-WmiInstance -Namespace "Root\SMS\Site_PS1" -Class SMS_BoundaryGroup -Arguments $Arguments
