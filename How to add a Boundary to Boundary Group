@@ -1,0 +1,4 @@
+$BoundaryGroup = "New Boundary Group"
+$BoundaryID = 16777231
+$BoundaryGroupQuery = Get-WmiObject -Namespace "Root\SMS\Site_PS1" -Class SMS_BoundaryGroup -Filter "Name = '$BoundaryGroup'"
+$BoundaryGroupQuery.AddBoundary($BoundaryID)
