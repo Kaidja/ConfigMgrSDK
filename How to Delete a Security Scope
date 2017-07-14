@@ -1,0 +1,9 @@
+$SecurityScopeName = "New Security Scope"
+$SecurityScopeQuery = Get-WmiObject -Namespace "Root\SMS\Site_PS1" -Class SMS_SecuredCategory -Filter "CategoryName = '$SecurityScopeName'"
+    If($SecurityScopeQuery.IsBuiltIn){
+          Write-Host "Deleting a built-in Security Scope is not allowed"
+    }
+    Else{
+          $SecurityScopeQuery.Delete()
+          Write-Host "Security Scope Deleted"
+    }
