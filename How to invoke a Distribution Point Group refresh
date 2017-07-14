@@ -1,0 +1,2 @@
+$DPGroupQuery = Get-WmiObject -Namespace 'Root\SMS\Site_PS1' -Class 'SMS_DistributionPointGroup' -Filter "Name='New Distribution Group'"
+$DPGroupQuery.RefreshDPGroup()
