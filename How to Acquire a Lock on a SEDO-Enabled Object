@@ -1,0 +1,12 @@
+$ObjectRELPath = "SMS_Application.CI_ID=16777312"
+$GUID = [GUID]::NewGuid().ToString()
+
+$WMIConnection = [WMIClass]"\\Localhost\root\SMS\Site_PS1:SMS_ObjectLock"
+    $ObjectLock = $WMIConnection.psbase.GetMethodParameters("RequestLock")
+    $ObjectLock.ObjectRelPath = $ObjectRELPath
+    $ObjectLock.RequestTransfer = $True
+            
+    $MethodOption = New-Object System.Management.InvokeMethodOptions
+    $MethodOption.Context.Add("ObjectLockContext",$GUID)
+    $MethodOption.Context.Add("MachineName",$ENV:ComputerName)
+$WMIConnection.psbase.InvokeMethod("RequestLock",$ObjectLock,$MethodOption)
