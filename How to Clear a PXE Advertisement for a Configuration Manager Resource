@@ -1,0 +1,2 @@
+[ARRAY]$ResourceID = 16777219
+Invoke-WmiMethod -Namespace "root\SMS\Site_PR1" -Class SMS_Collection -Name ClearLastNBSAdvForMachines -ArgumentList (,$ResourceID)
