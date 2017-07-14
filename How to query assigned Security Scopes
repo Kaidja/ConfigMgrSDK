@@ -1,0 +1,11 @@
+$AdminID = 16777219
+$AdminSecurityScopeQuery = Get-WmiObject -Namespace "ROOT\SMS\Site_PS1" -Class SMS_Admin -Filter "AdminID='$AdminID'"
+$AdminSecurityScopeQuery.Get()
+"Reading Admin: " + $AdminSecurityScopeQuery.LogonName
+
+" - Security Scopes: "
+foreach($Item in $AdminSecurityScopeQuery.Categories)
+{
+
+    Get-WmiObject -Namespace "ROOT\SMS\Site_PS1" -Class SMS_SecuredCategory -Filter "CategoryID='$Item'" | Select-Object -ExpandProperty CategoryName
+}
