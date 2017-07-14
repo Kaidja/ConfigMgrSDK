@@ -1,0 +1,67 @@
+PARAM(
+    [Parameter(Mandatory=$True,HelpMessage="Please Enter Site Server Site code")]
+        $SiteCode,
+    [Parameter(Mandatory=$True,HelpMessage="Please Enter Site Server Name")]     
+        $SiteServer,
+    [Parameter(Mandatory=$True,HelpMessage="Please Enter output file path")]
+        $OutPut
+     )
+
+Function Get-ManagementPointStatus
+{
+    PARAM(
+         $URL
+         )
+
+    $WEBObject = [system.net.WebRequest]::Create($URL)
+    $WEBObject.AuthenticationLevel = “None”
+    $WEBObject.Timeout = 7000
+
+    Try{
+        $WEBResponse = $WEBObject.GetResponse()
+        $Status = $WEBResponse.StatusCode            
+        $StatusCode = ($WEBResponse.Statuscode -as [int])  
+        $WEBResponse.Close()
+    }
+    Catch{
+        $status =  $_.Exception.Response.StatusCode
+        $statuscode = ( $_.Exception.Response.StatusCode -as [int])
+    }
+
+    $DObject = New-Object PSObject
+        $DObject | Add-Member -MemberType NoteProperty -Name "Status" -Value $Status
+        $DObject | Add-Member -MemberType NoteProperty -Name "Status Code" -Value $StatusCode
+
+    Return $DObject
+
+}
+
+$Servers = Get-WmiObject -Namespace "Root\SMS\Site_$($SiteCode)" -Class SMS_SystemResourceList -Filter "Rolename='SMS Management Point'" -ComputerName $SiteServer
+$EmptyArray = @()
+$i=0
+foreach($item in $Servers)
+{
+        $i++
+        Write-Progress -Activity "Processing Management Points" -Status "Done: $i of $($Servers.Count)" -PercentComplete (($i / $Servers.Count)*100)
+
+        $DObject = New-Object PSObject
+        $DObject | Add-Member -MemberType NoteProperty -Name "Server" -Value $item.ServerRemoteName
+            $MPCERTQuery = Get-ManagementPointStatus -URL "http://$($item.ServerRemoteName)/sms_mp/.sms_aut?mpcert"
+        $DObject | Add-Member -MemberType NoteProperty -Name "MPCERT Status " -Value $MPCERTQuery.Status
+        $DObject | Add-Member -MemberType NoteProperty -Name "MPCERT Status Code" -Value $MPCERTQuery."Status Code"
+            $MPLISTQuery = Get-ManagementPointStatus -URL "http://$($item.ServerRemoteName)/sms_mp/.sms_aut?mplist"
+        $DObject | Add-Member -MemberType NoteProperty -Name "MPLIST Status " -Value $MPLISTQuery.Status
+        $DObject | Add-Member -MemberType NoteProperty -Name "MPLIST Status Code" -Value $MPLISTQuery."Status Code"
+
+        $Ping = Test-Connection -Count 1 -ComputerName $item.ServerRemoteName -Quiet
+
+        If($Ping){
+            $DObject | Add-Member -MemberType NoteProperty -Name "Ping" -Value "SUCCESS"
+        }
+        Else{
+            $DObject | Add-Member -MemberType NoteProperty -Name "Ping" -Value "FAILED"
+        }
+
+        $EmptyArray += $DObject
+}       
+$EmptyArray | Export-Csv $OutPut -NoTypeInformation
