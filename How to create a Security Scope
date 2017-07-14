@@ -1,0 +1,5 @@
+$Arguments = @{
+    CategoryName = "New Security Scope";
+    CategoryDescription = "Made by PowerShell"
+}
+Set-WmiInstance -Namespace "Root\SMS\Site_PS1" -Class SMS_SecuredCategory -Arguments $Arguments
