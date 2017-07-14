@@ -1,0 +1,7 @@
+$DistributionPoint = 'Server'
+$DomainName = 'CM.LOCAL'
+$SiteCode = 'PS1'
+$RemoveTargetedPackages = $True
+$NALPath = "[""Display=\\" +  $DistributionPoint + "." + $DomainName + "\""]MSWNET:[""SMS_SITE=" + $SiteCode + """]\\" + $DistributionPoint + "." + $DomainName + "\"
+$DPGroupQuery = Get-WmiObject -Namespace "Root\SMS\Site_$SiteCode" -Class 'SMS_DistributionPointGroup' -Filter "Name='New Distribution Group'"
+$DPGroupQuery.RemoveDistributionPoints($NALPath,$RemoveTargetedPackages)
