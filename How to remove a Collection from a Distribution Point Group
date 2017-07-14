@@ -1,0 +1,5 @@
+$CollectionID = 'PS10001A'
+$SiteCode = 'PS1'
+$DistributionPointGroup = "New Distribution Group"
+$DPGroupQuery = Get-WmiObject -Namespace "Root\SMS\Site_$SiteCode" -Class 'SMS_DistributionPointGroup' -Filter "Name='$DistributionPointGroup'"
+$DPGroupQuery.DisassociateCollections($CollectionID)
