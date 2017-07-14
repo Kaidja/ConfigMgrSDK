@@ -1,0 +1,6 @@
+$Arguments = @{
+    DisplayName = "New ADSite Boundary";
+    BoundaryType = 1;
+    Value = "Default-First-Site-Name"
+}
+Set-WmiInstance -Namespace "Root\SMS\Site_PS1" -Class SMS_Boundary -Arguments $Arguments
