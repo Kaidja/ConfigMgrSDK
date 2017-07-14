@@ -1,0 +1,7 @@
+#Query Cache size
+$CacheQuery = Get-WmiObject -Namespace ROOT\CCM\SoftMgmtAgent -Class CacheConfig
+$CacheQuery.Size = 6000
+$CacheQuery.Put()
+
+#Restart CcmExec service
+Restart-Service -Name CcmExec
