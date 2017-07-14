@@ -1,0 +1,58 @@
+Param(
+    $SiteCode = "PS1",
+    $SiteServer= "Localhost",
+    $UserName = "LAB\\Kenny"
+    )
+
+
+Function Set-ADUserPrimaryDevice
+{
+    Param(
+         $UserName,
+         $DeviceName
+         )
+    
+    If(($DeviceName.GetType()).BaseType -eq [System.Array]){
+        [ADSISearcher]$FindUser ="(&(&(&(objectCategory=user)(objectClass=user)(sAMAccountName=$(($UserName.Split("\\"))[2])))))"
+        $User = $FindUser.FindOne()
+
+        $EmptyArray = @()
+        foreach($item in $DeviceName){
+            [ADSISearcher]$FindDevice ="(&(objectCategory=Computer)(Name=$($item.ResourceName)))"
+            $Device = $FindDevice.FindOne()
+                $EmptyArray += $($Device.Properties.distinguishedname)
+        }
+
+        $AddUserProperty = $User.GetDirectoryEntry()
+        $AddUserProperty."msds-primarycomputer" = $EmptyArray
+        $AddUserProperty.SetInfo()
+    }
+    Else{
+        [ADSISearcher]$FindUser ="(&(&(&(objectCategory=user)(objectClass=user)(sAMAccountName=$UserName))))"
+        $User = $FindUser.FindOne()
+
+        [ADSISearcher]$FindDevice ="(&(objectCategory=Computer)(Name=$($DeviceName.ResourceName)))"
+        $Device = $FindDevice.FindOne()
+
+        $AddUserProperty = $User.GetDirectoryEntry()
+        $AddUserProperty."msds-primarycomputer" = $($Device.Properties.distinguishedname)
+        $AddUserProperty.SetInfo()
+    }
+
+}
+Function Get-CMUserPrimaryDevice
+{
+    Param(
+         $SiteCode,
+         $SiteServer,
+         $UserName
+         )
+       
+    $PrimaryDeviceQuery = Get-WmiObject -Namespace "root\SMS\Site_$SiteCode" -Class SMS_UserMachineRelationship -Filter "UniqueUserName='$UserName' and ResourceClientType='1'" -ComputerName $SiteServer
+    $PrimaryDeviceQuery
+
+}
+
+# ******************** Script Entry Point ****************************************
+$PrimaryDevice = Get-CMUserPrimaryDevice -SiteCode $SiteCode -SiteServer $SiteServer -UserName $UserName
+Set-ADUserPrimaryDevice -UserName $UserName -DeviceName $PrimaryDevice
