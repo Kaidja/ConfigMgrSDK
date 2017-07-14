@@ -1,0 +1,4 @@
+$CacheElementID = "{0D8AF748-FE23-40C2-81B6-EC3CA89E78F2}"
+$CMObject = New-Object -ComObject "UIResource.UIResourceMgr"
+$CMCacheObjects = $CMObject.GetCacheInfo()
+$CMCacheObjects.DeleteCacheElement($CacheElementID)
