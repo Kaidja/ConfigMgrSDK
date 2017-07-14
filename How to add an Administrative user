@@ -1,0 +1,45 @@
+Function New-APermission
+{
+    Param(
+         $SiteServer,
+         $SiteCode,
+         [String]$CategoryID,
+         [String]$CategoryName,
+         [int]$CategoryTypeID,
+         [String]$RoleID,
+         [String]$RoleName
+         )
+    $WMIConnection = [WMICLASS]"\\$SiteServer\ROOT\SMS\Site_$($SiteCode):SMS_APermission"
+    $NewAPPermission = $WMIConnection.psbase.CreateInstance()
+    $NewAPPermission.CategoryID = $CategoryID
+    $NewAPPermission.CategoryName = $CategoryName
+    $NewAPPermission.CategoryTypeID = $CategoryTypeID
+    $NewAPPermission.RoleID = $RoleID
+    $NewAPPermission.RoleName = $RoleName
+    
+    $Script:Array += $NewAPPermission.psobject.baseobject
+    
+}
+
+$Script:Array =@()
+New-APermission -SiteServer Localhost -SiteCode PS1 -CategoryID "SMS00ALL"-CategoryName "All" -CategoryTypeID 29 -RoleID "SMS0009R" -RoleName "Application Administrator"
+New-APermission -SiteServer Localhost -SiteCode PS1 -CategoryID "SMS00001" -CategoryName "All Systems" -CategoryTypeID 1 -RoleID "SMS0009R"-RoleName "Application Administrator"
+New-APermission -SiteServer Localhost -SiteCode PS1 -CategoryID "SMS00004" -CategoryName "All Users and User Groups" -CategoryTypeID 1 -RoleID "SMS0009R" -RoleName "Application Administrator"
+
+$WMIConnection = [WMICLASS]"\\Localhost\ROOT\SMS\Site_PS1:SMS_Admin"
+$NewAdmin = $WMIConnection.psbase.CreateInstance()
+$NewAdmin.AdminSid = "S-1-5-21-119060438-4293788150-434161440-1114"
+$NewAdmin.Categories = "SMS00ALL"
+$NewAdmin.CategoryNames = "All Systems","All Users and User Groups"
+$NewAdmin.CollectionNames = "All Systems","All Users and User Groups"
+$NewAdmin.DisplayName = "Kenny Three"
+$NewAdmin.DistinguishedName = "CN=Kenny,CN=Users,DC=CM,DC=LOCAL"
+$NewAdmin.IsCovered = $True
+$NewAdmin.IsGroup = $False
+$NewAdmin.LogonName ="CM\Kenny"
+$NewAdmin.Permissions = $Array
+$NewAdmin.RoleNames = "Application Administrator"
+$NewAdmin.Roles = "SMS0009R"
+$NewAdmin.SKey = "PS1S-1-5-21-119060438-4293788150-434161440-1114"
+$NewAdmin.SourceSite = "PS1"
+$NewAdmin.Put()
