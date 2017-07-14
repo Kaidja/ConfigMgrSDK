@@ -1,0 +1,23 @@
+$MACAddress = "00:15:5D:C2:BA:08"
+$ResourceName = "Client50"
+$CollectionName = "OSD Bare Metal"
+
+#Collection query
+$CollectionQuery = Get-WmiObject -Namespace "Root\SMS\Site_PS1" -Class SMS_Collection -Filter "Name='$CollectionName'"
+
+#New computer account information
+$WMIConnection = ([WMIClass]"\\SERVER100\root\SMS\Site_PS1:SMS_Site")
+    $NewEntry = $WMIConnection.psbase.GetMethodParameters("ImportMachineEntry")
+    $NewEntry.MACAddress = $MACAddress
+    $NewEntry.NetbiosName = $ResourceName
+    $NewEntry.OverwriteExistingRecord = $True
+$Resource = $WMIConnection.psbase.InvokeMethod("ImportMachineEntry",$NewEntry,$null)
+
+#Create the Direct MemberShip Rule
+$NewRule = ([WMIClass]"\\Server100\root\SMS\Site_PS1:SMS_CollectionRuleDirect").CreateInstance()
+$NewRule.ResourceClassName = "SMS_R_SYSTEM"
+$NewRule.ResourceID = $Resource.ResourceID
+$NewRule.Rulename = $ResourceName
+
+#Add the newly created machine to collection
+$CollectionQuery.AddMemberShipRule($NewRule)
