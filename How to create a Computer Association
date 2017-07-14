@@ -1,0 +1,3 @@
+$SourceMachineResourceID = 16777218
+$DestinationMachineResourceID = 16777219
+Invoke-WmiMethod -Namespace "Root\SMS\Site_PS1" -Name AddAssociation -Class SMS_StateMigration -ArgumentList $DestinationMachineResourceID,$SourceMachineResourceID
