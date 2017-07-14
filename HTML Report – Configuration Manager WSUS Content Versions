@@ -1,0 +1,51 @@
+$PrimaryServers = Import-Csv "D:\Scripts\PrimaryServers.CSV"
+$EmptyArray = @()
+
+foreach($PServer in $PrimaryServers)
+{
+    #Connect to SQL Server
+    $SQLServer = $PServer.Server
+    $SQLConnectionString = "Server=$($SQLServer)"
+    $SQLConnectionString = "$SQLConnectionString; Database='$($PServer.Database)'; Integrated Security=True;"
+    $SQLConnection = New-Object System.Data.SqlClient.SqlConnection
+    $SQLConnection.ConnectionString = $SQLConnectionString
+    $SQLConnection.Open()
+
+    #Query WMI Namespace
+    $Servers = Get-WmiObject -Namespace "root\sms\site_$($PServer.SiteCode)" -ComputerName $PServer.Server -Query "select servername,sitecode from SMS_SystemResourceList where rolename='SMS Software update point'"
+
+    foreach($item in $Servers)
+    {
+        #Query Update_SyncStatus table from SMS database
+        $SQLQuery = "SELECT SiteCode, ContentVersion, SyncTime FROM update_syncstatus where siteCode='$($item.SiteCode)'"
+        $SQLAdapter = New-Object System.Data.SqlClient.SqlDataAdapter($SQLQuery,$SQLConnection)
+        $SQLDataSet = New-Object System.Data.Dataset
+        $null = $SQLAdapter.Fill($SQLDataSet,"update_syncstatus")
+        
+        foreach($row in $SQLDataSet.Tables[0].Rows)
+        {
+           #Create new object
+           $DObject = New-Object PSObject
+               $DObject |Add-Member -MemberType NoteProperty -Name "Server" -Value $($item.ServerName)
+               $DObject |Add-Member -MemberType NoteProperty -Name "ContentVersion" -Value $($row.contentversion)
+               $DObject |Add-Member -MemberType NoteProperty -Name "SiteCode" -Value $($item.SiteCode)
+           $EmptyArray += $DObject
+           
+        }
+    }
+}
+
+#HTML style
+$HeadStyle = "<style>"
+$HeadStyle = $HeadStyle + "BODY{background-color:peachpuff;}"
+$HeadStyle = $HeadStyle + "TABLE{border-width: 1px;border-style: solid;border-color: black;border-collapse: collapse;}"
+$HeadStyle = $HeadStyle + "TH{border-width: 1px;padding: 0px;border-style: solid;border-color: black;background-color:thistle}"
+$HeadStyle = $HeadStyle + "TD{border-width: 1px;padding: 0px;border-style: solid;border-color: black;background-color:palegoldenrod}"
+$HeadStyle = $HeadStyle + "</style>"
+
+$Date = Get-Date
+
+#Export out results
+$EmptyArray | ConvertTo-Html -Head $HeadStyle -Body "<h2>WSUS Content Version Report: $date</h2>" | Out-File "D:\Scripts\WSUSContentReport.html"
+#Send email
+Send-MailMessage -To "IT administrator <Email@Domain.com>" -from "ConfigMgr Administrator" -subject "WSUS Content Version Report" -smtpServer "SMTP.Domain.com" -Attachments "D:\Scripts\WSUSContentReport.html"
