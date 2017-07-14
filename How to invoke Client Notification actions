@@ -1,0 +1,31 @@
+#Example 1
+$WMIConnection = [WMICLASS]"\\CM01\Root\SMS\Site_PS1:SMS_ClientOperation"
+    $CMClientNotification = $WMIConnection.psbase.GetMethodParameters("InitiateClientOperation")
+    $CMClientNotification.Type = 8 # Download Computer Policy
+    $CMClientNotification.TargetCollectionID = "PS10000B"
+    $CMClientNotification.TargetResourceIDs = 16777224
+$WMIConnection.psbase.InvokeMethod("InitiateClientOperation",$CMClientNotification,$Null)
+
+#Example 2
+$WMIConnection = [WMICLASS]"\\CM01\Root\SMS\Site_PS1:SMS_ClientOperation"
+    $CMClientNotification = $WMIConnection.psbase.GetMethodParameters("InitiateClientOperation")
+    $CMClientNotification.Type = 1 # Full Scan
+    $CMClientNotification.TargetCollectionID = "PS10000B"
+    $CMClientNotification.TargetResourceIDs = 16777224
+$WMIConnection.psbase.InvokeMethod("InitiateClientOperation",$CMClientNotification,$Null)
+
+#Example 3
+$WMIConnection = [WMICLASS]"\\CM01\Root\SMS\Site_PS1:SMS_ClientOperation"
+    $CMClientNotification = $WMIConnection.psbase.GetMethodParameters("InitiateClientOperation")
+    $CMClientNotification.Type = 2 # Quick Scan
+    $CMClientNotification.TargetCollectionID = "PS10000B"
+    $CMClientNotification.TargetResourceIDs = 16777224
+$WMIConnection.psbase.InvokeMethod("InitiateClientOperation",$CMClientNotification,$Null)
+
+#Example 4
+$WMIConnection = [WMICLASS]"\\CM01\Root\SMS\Site_PS1:SMS_ClientOperation"
+    $CMClientNotification = $WMIConnection.psbase.GetMethodParameters("InitiateClientOperation")
+    $CMClientNotification.Type = 4 # Download Definition
+    $CMClientNotification.TargetCollectionID = "PS10000B"
+    $CMClientNotification.TargetResourceIDs = 16777224
+$WMIConnection.psbase.InvokeMethod("InitiateClientOperation",$CMClientNotification,$Null)
