@@ -1,0 +1,11 @@
+$SiteCode = "PS1"
+$Arguments = @{
+    ProductName = "Microsoft Office 2010 Word"; 
+    FileName = "WinWord.Exe";
+    OriginalFileName="WinWord.exe"; `
+    ApplyToChildSites = $True;
+    FileVersion = "*";
+    SourceSite = $SiteCode;
+    SiteCode = $SiteCode
+}
+Set-WmiInstance -Namespace "Root\SMS\Site_$SiteCode" -Class SMS_MeteredProductRule -Arguments $Arguments
