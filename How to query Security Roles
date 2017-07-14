@@ -1,0 +1,1 @@
+Get-WmiObject -Namespace "Root\SMS\Site_PS1" -Class SMS_Role | Select-Object RoleName,RoleID,IsBuiltIn,NumberOfAdmins
