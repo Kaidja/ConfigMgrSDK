@@ -1,0 +1,8 @@
+#Example 1
+$CMObject = New-Object -ComObject "UIResource.UIResourceMgr"
+$CMCacheObjects = $CMObject.GetCacheInfo()
+$CMCacheObjects.GetCacheElements()
+
+#Example 2
+$CacheInfoQuery = Get-WmiObject -Namespace Root\ccm\SoftMgmtAgent -Class CacheInfoEx
+$CacheInfoQuery
