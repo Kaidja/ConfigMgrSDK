@@ -1,0 +1,8 @@
+$BoundaryGroup = "New Boundary Group"
+$DistributionPoint = "Server"
+$DomainName = "CM.LOCAL"
+$SiteCode = "PS1"
+$Flag = 0 # 0 - Fast Connection, 1 -  Slow Connection
+$NALPath = "[""Display=\\" +  $DistributionPoint + "." + $DomainName + "\""]MSWNET:[""SMS_SITE=" + $SiteCode + """]\\" + $DistributionPoint + "." + $DomainName + "\"
+$BoundaryGroupQuery = Get-WmiObject -Namespace "Root\SMS\Site_PS1" -Class SMS_BoundaryGroup -Filter "Name = '$BoundaryGroup'"
+$BoundaryGroupQuery.AddSiteSystem($NALPath,$Flag)
