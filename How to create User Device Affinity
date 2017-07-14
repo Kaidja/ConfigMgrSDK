@@ -1,0 +1,13 @@
+$SiteServer = "CM01"
+$SiteCode = "PS1"
+$MachineResourceId = 16777219
+$User = "LAB\Kenny"
+$AffinityType = 2 # Administrator defined
+
+$WMIConnection = [WMIClass]"\\$SiteServer\Root\SMS\Site_$($SiteCode):SMS_UserMachineRelationship"
+    $CreateUDA = $WMIConnection.psbase.GetMethodParameters("CreateRelationship")
+    $CreateUDA.MachineResourceId = $MachineResourceId
+    $CreateUDA.SourceId = $AffinityType
+    $CreateUDA.TypeId = 1
+    $CreateUDA.UserAccountName = $User
+$WMIConnection.psbase.InvokeMethod("CreateRelationship",$CreateUDA,$null)
