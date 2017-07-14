@@ -1,0 +1,17 @@
+#Example 1
+[ARRAY]$SecurityScopeCategoryID = "PS100001"
+[ARRAY]$BoundaryGroupID = 16777217
+[ARRAY]$ObjectTypeID = 46 #SMS_BoundaryGroup
+Invoke-WmiMethod -Namespace "Root\SMS\Site_PS1" -Name AddMemberShips -Class SMS_SecuredCategoryMemberShip `
+-ArgumentList $SecurityScopeCategoryID,$BoundaryGroupID,$ObjectTypeID
+
+#Example 2
+$SecurityScopeCategoryID = "PS100001"
+$BoundaryGroupID = 16777217
+$ObjectTypeID = 46 #SMS_BoundaryGroup
+$WMIConnection = ([WMIClass]"\\Localhost\root\SMS\Site_PS1:SMS_SecuredCategoryMemberShip")
+$ObjectToCategory = $WMIConnection.psbase.GetMethodParameters("AddMemberShips")
+$ObjectToCategory.CategoryIDs = $SecurityScopeCategoryID
+$ObjectToCategory.ObjectIDs = $BoundaryGroupID
+$ObjectToCategory.ObjectTypeIDs = $ObjectTypeID
+$WMIConnection.psbase.InvokeMethod("AddMemberShips",$ObjectToCategory,$null)
