@@ -1,0 +1,40 @@
+Param(
+    $SiteServer = "Localhost",
+    $SiteCode = "D01"
+)
+
+$PackagesQuery = Get-WmiObject -Namespace Root\sms\Site_$SiteCode -Query "select Pkgsourcepath,PackageID,Name from SMS_Package where sourcesite='$SiteCode' order by Pkgsourcepath" -computerName $SiteServer
+$EmptyArray = @()
+$Location = Get-Location |Select-Object -ExpandProperty Path
+$i = 0
+
+Foreach($item in $PackagesQuery)
+{
+    $i++
+    Write-Progress -Activity "Processing Package sources" -Status "Added: $i of $($PackagesQuery.count) " -PercentComplete (($i / $PackagesQuery.Count)*100)
+
+        $DObject = New-Object PSObject
+                $DObject |Add-Member -MemberType NoteProperty -Name "Package" -Value $($item.PackageID)
+               $DObject |Add-Member -MemberType NoteProperty -Name "Source" -Value $($item.pkgsourcepath)
+               $DObject |Add-Member -MemberType NoteProperty -Name "Name" -Value $($item.Name)
+        $EmptyArray += $DObject
+}
+$EmptyArray | Export-Csv "$Location\PackageSources.csv" -NoTypeInformation  
+
+$Sources = Import-Csv "$Location\PackageSources.csv"
+$EmptyArray = @()
+$d = 0
+Foreach($source in $Sources)
+{
+    $d++
+    Write-Progress -Activity "Processing Package source sizes" -Status "Processed: $d of $($Sources.Count)" -PercentComplete (($d / $Sources.Count)*100)
+
+    $SourceSizeQuery = Get-ChildItem $source.Source -Recurse| Measure-Object -property length -sum |Select-Object -ExpandProperty SUM
+    $DObject = New-Object PSObject
+        $DObject |Add-Member -MemberType NoteProperty -Name "Package" -Value $($source.Package)
+        $DObject |Add-Member -MemberType NoteProperty -Name "Size" -Value ($SourceSizeQuery/1MB)
+        $DObject |Add-Member -MemberType NoteProperty -Name "Source" -Value $($source.Source)
+    $EmptyArray += $DObject
+}
+
+$EmptyArray |Export-Csv PackageSourceSizes.csv -NoTypeInformation
