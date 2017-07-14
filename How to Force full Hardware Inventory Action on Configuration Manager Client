@@ -1,0 +1,7 @@
+#Example 1
+$HardwareInventoryID = '{00000000-0000-0000-0000-000000000001}'
+Get-WmiObject -Namespace 'Root\CCM\INVAGT' -Class 'InventoryActionStatus' -Filter "InventoryActionID='$HardwareInventoryID'" | Remove-WmiObject
+
+#Example 2
+$HardwareInventoryID = '{00000000-0000-0000-0000-000000000001}'
+Get-CimInstance -Namespace 'Root\CCM\INVAGT' -ClassName 'InventoryActionStatus' -Filter "InventoryActionID='$HardwareInventoryID'" | Remove-CimInstance
