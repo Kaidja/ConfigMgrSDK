@@ -1,0 +1,5 @@
+$ObjectRELPath = "SMS_Application.CI_ID=16777312"
+$WMIConnection = [WMIClass]"\\Localhost\root\SMS\Site_PS1:SMS_ObjectLock"
+    $ObjectLock = $WMIConnection.psbase.GetMethodParameters("GetLockInformation")
+    $ObjectLock.ObjectRelPath = $ObjectRELPath
+$WMIConnection.psbase.InvokeMethod("GetLockInformation",$ObjectLock,$null)
