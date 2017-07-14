@@ -1,0 +1,10 @@
+$AdminID = 16777219
+$AdminRolesQuery = Get-WmiObject -Namespace "ROOT\SMS\Site_PS1" -Class SMS_Admin -Filter "AdminID='$AdminID'"
+$AdminRolesQuery.Get()
+"Reading Admin: " + $AdminRolesQuery.LogonName
+" - Roles: "
+foreach($Item in $AdminRolesQuery.Roles)
+{
+
+    Get-WmiObject -Namespace "ROOT\SMS\Site_PS1" -Class SMS_Role -Filter "RoleID='$Item'" | Select-Object -ExpandProperty RoleName
+}
