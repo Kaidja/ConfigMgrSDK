@@ -1,0 +1,6 @@
+$Arguments = @{
+    DisplayName = "New IP Range Boundary";
+    BoundaryType = 3;
+    Value = "192.168.1.2-192.168.5.6"
+}
+Set-WmiInstance -Namespace "Root\SMS\Site_PS1" -Class SMS_Boundary -Arguments $Arguments
