@@ -1,0 +1,6 @@
+$Arguments = @{
+    DisplayName = "New IPv6 Boundary";
+    BoundaryType = 2;
+    Value = "Fe80:0000:0000:0000"
+}
+Set-WmiInstance -Namespace "Root\SMS\Site_PS1" -Class SMS_Boundary -Arguments $Arguments
