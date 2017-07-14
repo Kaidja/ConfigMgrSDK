@@ -1,0 +1,4 @@
+$PackageID = 'PR100005'
+$DistributionPointGroup = 'New Distribution Group'
+$DPGroupQuery = Get-WmiObject -Namespace "Root\SMS\Site_PS1" -Class 'SMS_DistributionPointGroup' -Filter "Name='$DistributionPointGroup'"
+$DPGroupQuery.AddPackages($PackageID)
